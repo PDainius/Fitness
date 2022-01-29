@@ -86,7 +86,9 @@
             Height = height;
         }
 
+#pragma warning disable CS8618 // Non-nullable property 'Gender' must contain a non-null value when exiting constructor. Consider declaring the property as nullable.
         public User(string name)
+#pragma warning restore CS8618 // Non-nullable property 'Gender' must contain a non-null value when exiting constructor. Consider declaring the property as nullable.
         {
             if (string.IsNullOrWhiteSpace(name))
             {
@@ -98,7 +100,7 @@
 
         public override string ToString()
         {
-            return $"{Name} {Age}";
+            return $"{Gender} {Age}";
         }
     }
 }

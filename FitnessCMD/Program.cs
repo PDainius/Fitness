@@ -17,7 +17,9 @@ var name = Console.ReadLine();
 //Console.WriteLine("Enter your user height");
 //var height = double.Parse(Console.ReadLine());
 
+#pragma warning disable CS8604 // Possible null reference argument for parameter 'userName' in 'UserController.UserController(string userName)'.
 var userController = new UserController(name);
+#pragma warning restore CS8604 // Possible null reference argument for parameter 'userName' in 'UserController.UserController(string userName)'.
 if (userController.IsNewUser)
 {
     Console.Write("Enter your gender: ");
@@ -26,7 +28,9 @@ if (userController.IsNewUser)
     var weight = ParseDouble("weight");
     var height = ParseDouble("height");
 
+#pragma warning disable CS8604 // Possible null reference argument for parameter 'genderName' in 'void UserController.SetNewUserData(string genderName, DateTime birthDate, double weight = 1, double height = 1)'.
     userController.SetNewUserData(gender, birthDate, weight, height);
+#pragma warning restore CS8604 // Possible null reference argument for parameter 'genderName' in 'void UserController.SetNewUserData(string genderName, DateTime birthDate, double weight = 1, double height = 1)'.
 }
 
 Console.WriteLine(userController.CurrentUser);
@@ -40,7 +44,9 @@ static DateTime ParseDateTime()
         if (DateTime.TryParse(Console.ReadLine(), out birthDate))
         {
             return birthDate;
+#pragma warning disable CS0162 // Unreachable code detected
             break;
+#pragma warning restore CS0162 // Unreachable code detected
         }
         else
         {
@@ -57,7 +63,9 @@ static double ParseDouble(string name)
         if (double.TryParse(Console.ReadLine(), out double value))
         {
             return value;
+#pragma warning disable CS0162 // Unreachable code detected
             break;
+#pragma warning restore CS0162 // Unreachable code detected
         }
         else
         {
