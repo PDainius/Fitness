@@ -1,5 +1,6 @@
 ﻿using FitnessBL.Model;
 using System;
+using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 
 namespace FitnessBL.Controller
@@ -12,51 +13,80 @@ namespace FitnessBL.Controller
         /// <summary>
         /// Application user.
         /// </summary>
-        public User User { get; }
+        public List<User> Users { get; }
+
+        public User CurrentUser { get; }
+
+        public bool IsNewUser { get; } = false;
 
         /// <summary>
         /// Creating a new user controller.
         /// </summary>
         /// <param name="user"></param>
         /// <exception cref="ArgumentNullException"></exception>
-        public UserController(string userName, string genderName, DateTime birthDay, double weight, double height)
+        public UserController(string userName)
         {
-            // TODO: Inspection
-
-            var gender = new Gender(genderName);
-            User = new User(userName, gender, birthDay, weight, height);
-        }
-
-        /// <summary>
-        /// Saved user data.
-        /// </summary>
-        public void Save()
-        {
-            var formatter = new BinaryFormatter(); 
-
-            using(var fs = new FileStream("users.dat", FileMode.OpenOrCreate))
+            if (string.IsNullOrWhiteSpace(userName))
             {
-                formatter.Serialize(fs, User);
+                throw new ArgumentNullException("User name cannot be empty", nameof(userName));
             }
-        }
+
+            Users = GetUsersData();
+
+            CurrentUser = Users.SingleOrDefault(u => u.Name == userName);
+
+            if (CurrentUser == null)
+            {
+                CurrentUser = new User(userName);
+                Users.Add(CurrentUser);
+                IsNewUser = true;
+                Save();
+            }
+        }               
 
         /// <summary>
-        /// User data received.
+        /// Get user list.
         /// </summary>
         /// <returns> Application user. </returns>
         /// <exception cref="FileLoadException"></exception>
-        public UserController()
+        private List<User> GetUsersData()
         {
             var formatter = new BinaryFormatter();
 
             using (var fs = new FileStream("users.dat", FileMode.OpenOrCreate))
             {
-                if (formatter.Deserialize(fs) is User user)
+                if (formatter.Deserialize(fs) is List<User> users)
                 {
-                    User = user;
+                    return users;
                 }
+                else
+                {
+                    return new List<User>();
+                }
+            }
+        }
 
-                // TODO: What to do if the user did not read?
+        public void SetNewUserData(string genderName, DateTime birthDate, double weight = 1, double height = 1)
+        {
+            // TODO: Inspection
+
+            CurrentUser.Gender = new Gender(genderName);
+            CurrentUser.BirthDate = birthDate;
+            CurrentUser.Weight = weight;
+            CurrentUser.Height = height;
+            Save();
+        }
+
+        /// <summary>
+        /// Saved user data.
+        /// </summary>
+        private void Save()
+        {
+            var formatter = new BinaryFormatter();
+
+            using (var fs = new FileStream("users.dat", FileMode.OpenOrCreate))
+            {
+                formatter.Serialize(fs, Users);
             }
         }
     }
